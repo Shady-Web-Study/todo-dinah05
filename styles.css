@@ -1,0 +1,503 @@
+/* 링큐 디자인시스템을 좀 루팡 해보앗어요 */
+@font-face {
+  font-family: "Paperlogy";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Paperlogy";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-6SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+ 
+:root {
+  /* text */
+  --text-primary: #000208;
+  --text-secondary: #43454b;
+  --text-tertiary: #87898f;
+  --text-placeholder: #87898f;
+  --text-brand: #1451d5;
+  --text-accent: #9a3ab5;
+  --text-error: #d92d2d;
+  --text-inverse: #ffffff;
+  /* background · surface */
+  --background-subtle: #f5f6f9;
+  --surface-default: #ffffff;
+  --surface-brand-subtle: #e5edff;
+  /* border · icon */
+  --border-default: #e9eaee;
+  --border-strong: #d7d9df;
+  --icon-inactive: #b7b9bf;
+  /* status */
+  /* gradient */
+  --gradient-primary: linear-gradient(90deg, #2c6fff 0%, #c800ff 100%);
+  --gradient-soft: linear-gradient(90deg, #d5e0ff 0%, #f1cdff 100%);
+  /* 메모지 */
+  --paper: #fffdf6;
+  --paper-line: #e5edff;
+  --paper-margin: #e9b2cd;
+ 
+  /* 서체 */
+  --font-brand: "Paperlogy", "Pretendard", -apple-system, sans-serif;
+  --font-body: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  --font-hand: "Gaegu", "Nanum Pen Script", cursive;
+ 
+  /* 간격 · 모서리 (space/*, shape/*) */
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --shape-md: 12px;
+  --shape-lg: 16px;
+  --shape-full: 999px;
+ 
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+ 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+ 
+body {
+  min-height: 100vh;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  background-color: var(--background-subtle);
+  /* 모눈 배경 */
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-font-smoothing: antialiased;
+}
+ 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+ 
+.hand {
+  font-family: var(--font-hand);
+}
+ 
+.page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 56px var(--space-5) 80px;
+}
+ 
+/* =========================================================
+   헤더
+   ========================================================= */
+.app-header {
+  margin-bottom: var(--space-6);
+}
+ 
+.eyebrow {
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+ 
+.app-title {
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: clamp(1.75rem, 4.5vw, 2.4rem);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+ 
+/* =========================================================
+   입력창
+   ========================================================= */
+.todo-form {
+  margin-bottom: var(--space-6);
+}
+ 
+.input-wrap {
+  position: relative;
+}
+ 
+.todo-input {
+  width: 100%;
+  height: 58px;
+  padding: 0 110px 0 var(--space-5);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  border: 2px solid var(--border-default);
+  border-radius: var(--shape-lg);
+  background: var(--surface-default);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.2s;
+}
+ 
+.todo-input::placeholder {
+  color: var(--text-placeholder);
+}
+ 
+/* 포커스 시 테두리를 브랜드 그라데이션으로 */
+.todo-input:focus {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface-default), var(--surface-default)) padding-box,
+    var(--gradient-primary) border-box;
+  box-shadow: 0 6px 20px rgba(44, 111, 255, 0.12);
+}
+ 
+.todo-input.is-invalid {
+  border-color: var(--text-error);
+  background: var(--surface-default);
+  animation: shake 0.35s;
+}
+ 
+.enter-hint {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  transform: translateY(-50%);
+  padding: 4px 10px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  background: var(--background-subtle);
+  border: 1px solid var(--border-default);
+  border-bottom-width: 3px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+ 
+.todo-error {
+  min-height: 1.4em;
+  margin-top: 6px;
+  padding-left: var(--space-2);
+  font-size: 0.85rem;
+  color: var(--text-error);
+}
+ 
+/* =========================================================
+   보드 · 패널
+   ========================================================= */
+.board {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+ 
+@media (max-width: 720px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+}
+ 
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+ 
+.count {
+  min-width: 28px;
+  padding: 2px 9px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-brand);
+  background: var(--surface-brand-subtle);
+  border-radius: var(--shape-full);
+}
+ 
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+ 
+.empty-message {
+  padding: var(--space-6) 0;
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--text-tertiary);
+}
+ 
+.todo-list:not(:empty) + .empty-message {
+  display: none;
+}
+ 
+/* ----- 해야 할 일 카드 ----- */
+.panel-pending .todo-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 8px 8px var(--space-4);
+  background: var(--surface-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--shape-md);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+ 
+.panel-pending .todo-item:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  box-shadow: 0 6px 16px rgba(0, 2, 8, 0.06);
+}
+ 
+.todo-item.is-new {
+  animation: item-in 0.45s var(--ease-spring);
+}
+ 
+.todo-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+ 
+/* 완료 · 삭제 버튼 공통 */
+.complete-btn,
+.del-btn {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 12px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.complete-btn:focus-visible,
+.del-btn:focus-visible {
+  outline: 2px solid var(--text-brand);
+  outline-offset: 2px;
+}
+
+/* 완료 버튼 */
+.complete-btn {
+  color: var(--text-brand);
+  background: var(--surface-brand-subtle);
+}
+
+.complete-btn:hover,
+.todo-item.is-completing .complete-btn {
+  color: var(--text-inverse);
+  background: var(--gradient-primary);
+}
+
+/* 완료 누른 순간: 카드 테두리를 브랜드 그라데이션으로 */
+.todo-item.is-completing {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface-default), var(--surface-default)) padding-box,
+    var(--gradient-primary) border-box;
+}
+
+/* 삭제 버튼 */
+.del-btn {
+  color: var(--text-tertiary);
+  background: transparent;
+}
+
+.del-btn:hover {
+  color: var(--text-error);
+  background: #ffdada;
+}
+ 
+/* ----- 해낸 일: 손글씨 메모지 ----- */
+.panel-done {
+  position: relative;
+  padding: 34px var(--space-6) var(--space-6) 52px;
+  background-color: var(--paper);
+  /* 줄 노트 + 왼쪽 여백선 */
+  background-image:
+    linear-gradient(90deg, transparent 38px, var(--paper-margin) 38px, var(--paper-margin) 39.5px, transparent 39.5px),
+    repeating-linear-gradient(transparent 0 33px, var(--paper-line) 33px 34px);
+  background-position: 0 0, 0 30px;
+  border-radius: 4px;
+  box-shadow:
+    0 1px 0 rgba(0, 2, 8, 0.04),
+    0 14px 28px rgba(0, 2, 8, 0.08);
+  transform: rotate(0.8deg);
+}
+ 
+.tape {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 96px;
+  height: 26px;
+  background: var(--gradient-soft);
+  opacity: 0.85;
+  transform: translateX(-50%) rotate(-3deg);
+  clip-path: polygon(3% 0, 97% 4%, 100% 50%, 96% 100%, 2% 96%, 0 50%);
+}
+ 
+.panel-done .panel-title {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 1.7rem;
+  margin-bottom: 6px;
+}
+ 
+.count-hand {
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--text-accent);
+  background: transparent;
+  border: 2px solid var(--text-accent);
+  border-radius: 50% 45% 55% 48%;
+  padding: 0 8px;
+}
+ 
+.panel-done .todo-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 34px;
+  font-family: var(--font-hand);
+}
+ 
+.panel-done .todo-item:nth-child(odd) {
+  transform: rotate(-0.4deg);
+}
+ 
+.panel-done .todo-text {
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  line-height: 1.3;
+  color: var(--text-secondary);
+}
+ 
+/* 손으로 그은 물결 취소선 */
+.strike {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4.5 Q6 1 12 4 T25 4.2 T38 3.6 T50 4.4 T63 3.8 T76 4.5 T88 3.6 T100 4' fill='none' stroke='%239A3AB5' stroke-width='1.8' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0 58%;
+  background-size: 100% 0.5em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+ 
+.todo-item.is-just-done {
+  animation: note-drop 0.5s var(--ease-spring);
+}
+ 
+.todo-item.is-just-done .strike {
+  animation: strike-draw 0.55s 0.25s ease-out both;
+}
+ 
+.panel-done .del-btn {
+  font-family: var(--font-hand);
+  font-size: 1.05rem;
+  height: 30px;
+  opacity: 0;
+}
+ 
+.panel-done .todo-item:hover .del-btn,
+.panel-done .del-btn:focus-visible {
+  opacity: 1;
+}
+ 
+@media (hover: none) {
+  .panel-done .del-btn {
+    opacity: 1;
+  }
+}
+ 
+/* =========================================================
+   ㅊㅋㅊㅋ (JS에서 해용)
+   ========================================================= */
+.confetti {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+}
+ 
+.confetti.is-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+ 
+.confetti.is-ring {
+  width: 11px;
+  height: 11px;
+  border: 2.5px solid;
+  border-radius: 50%;
+}
+ 
+.confetti.is-bar {
+  width: 4px;
+  height: 11px;
+  border-radius: 2px;
+}
+ 
+/* =========================================================
+   키프레임
+   ========================================================= */
+@keyframes item-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+ 
+@keyframes note-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) rotate(-3deg);
+  }
+  to {
+    opacity: 1;
+  }
+}
+ 
+@keyframes strike-draw {
+  from { background-size: 0% 0.5em; }
+  to { background-size: 100% 0.5em; }
+}
+ 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+ 
+/* 움직임 줄이기 설정 고려 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

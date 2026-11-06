@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f6f9" />
+  <title>DAIN'S TO-DO</title>
+
+  <!-- 폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard-dynamic-subset.css"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="app-header">
+      <div class="header-text">
+        <p class="eyebrow">DAIN'S TO-DO</p>
+        <h1 class="app-title">할 일 목록</h1>
+      </div>
+    </header>
+
+    <form class="todo-form" id="todo-form" autocomplete="off">
+      <label for="todo-input" class="visually-hidden">할 일 입력</label>
+      <div class="input-wrap">
+        <input
+          type="text"
+          id="todo-input"
+          class="todo-input"
+          placeholder="할 일을 적고 Enter를 눌러요"
+          maxlength="100"
+          aria-describedby="todo-error"
+        />
+        <kbd class="enter-hint" aria-hidden="true">Enter ↵</kbd>
+      </div>
+      <p class="todo-error" id="todo-error" role="alert"></p>
+    </form>
+
+    <main class="board">
+      <section class="panel panel-pending" aria-labelledby="pending-title">
+        <h2 class="panel-title" id="pending-title">
+          해야 할 일 <span class="count" id="pending-count">0</span>
+        </h2>
+        <ul class="todo-list" id="pending-list"></ul>
+        <p class="empty-message hand" id="pending-empty">
+          비어 있어요. 오늘 할 일을 하나 적어볼까요?
+        </p>
+      </section>
+
+      <section class="panel panel-done" aria-labelledby="done-title">
+        <span class="tape" aria-hidden="true"></span>
+        <h2 class="panel-title hand" id="done-title">
+          해낸 일 <span class="count count-hand" id="done-count">0</span>
+        </h2>
+        <ul class="todo-list" id="done-list"></ul>
+        <p class="empty-message hand" id="done-empty">
+          끝낸 일은 여기 메모지에 적혀요.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
